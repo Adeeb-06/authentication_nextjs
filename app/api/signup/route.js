@@ -6,6 +6,10 @@ export async function POST(req) {
     try {
         await connectToMongoDB();
         const { name, email, role, password } = await req.json();
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return NextResponse.json({ error: 'User already exists' }, { status: 400 });
+        }
         const user = await User.create({ name, email, role, password });
         return NextResponse.json({ user }, { status: 201 });
     } catch (error) {
